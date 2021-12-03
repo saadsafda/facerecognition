@@ -8,7 +8,7 @@ import 'package:Face_recognition/homescreen.dart';
 import 'package:Face_recognition/widgets/button_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import '../constants.dart';
@@ -19,24 +19,33 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
-  String _email, _password;
+  String _name, _email, _password;
   bool _isLoading = false;
 
   Future<void> _submit() async {
     // implement the signUp method in cloud firestore
+    // and then use the signUp method to create a new user
     if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
       setState(() {
         _isLoading = true;
       });
+      _formKey.currentState.save();
       try {
-        await FirebaseAuth.instance
+        UserCredential authResult = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
-
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        User user = authResult.user;
+        if (user != null) {
+          _firestore.collection('users').doc(user.uid).set({
+            'uid': user.uid,
+            'name': _name,
+            'email': _email,
+            'password': _password,
+          });
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        }
       } catch (e) {
         print(e.message);
       }
@@ -94,6 +103,23 @@ class _SignUpState extends State<SignUp> {
                   child: Column(
                     children: <Widget>[
                       TextFormField(
+                        validator: (input) {
+                          if (input.length < 3) {
+                            return 'Your Name needs to be at least 3 characters';
+                          } else if (input.isEmpty) {
+                            return 'Please type a Name';
+                          }
+                        },
+                        onSaved: (input) => _name = input,
+                        decoration: kTextFieldDecoration.copyWith(
+                          hintText: 'Enter your Name',
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
                         validator: (input) {
                           if (input.isEmpty) {
                             return 'Please type an email';

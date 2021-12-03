@@ -15,9 +15,15 @@ class _AdminContentState extends State<AdminContent> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text('Admin Content'),
-          Text('Admin Content'),
-          Text('Admin Content'),
+          Text(
+            'Admin Content',
+          ),
+          Text(
+            'Admin Content',
+          ),
+          Text(
+            'Admin Content',
+          ),
         ],
       ),
     );
