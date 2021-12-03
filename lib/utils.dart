@@ -7,7 +7,7 @@ import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:image/image.dart' as imglib;
 
 typedef HandleDetection = Future<dynamic> Function(FirebaseVisionImage image);
-enum Choice { view, delete }
+enum Choice { view, delete, herder }
 
 Future<CameraDescription> getCamera(CameraLensDirection dir) async {
   return await availableCameras().then(
