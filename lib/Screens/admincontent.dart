@@ -12,19 +12,22 @@ class _AdminContentState extends State<AdminContent> {
       appBar: AppBar(
         title: Text('Admin Content'),
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(
-            'Admin Content',
-          ),
-          Text(
-            'Admin Content',
-          ),
-          Text(
-            'Admin Content',
-          ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              'N A M E S',
+            ),
+            Text(
+              'F A C E S',
+            ),
+            Text(
+              'Admin Content',
+            ),
+          ],
+        ),
       ),
     );
   }

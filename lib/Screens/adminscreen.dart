@@ -153,8 +153,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           try {
                             final user = await FirebaseAuth.instance
                                 .signInWithEmailAndPassword(
-                                    email: "admin@gmail.com",
-                                    password: "@dmin2005");
+                                    email: _email, password: _password);
                             if (user != null) {
                               Navigator.push(
                                   context,
