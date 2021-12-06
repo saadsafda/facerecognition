@@ -42,6 +42,7 @@ class _SignUpState extends State<SignUp> {
             'name': _name,
             'email': _email,
             'password': _password,
+            'date': DateTime.now(),
           });
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => MyHomePage()));

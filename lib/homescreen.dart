@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'package:Face_recognition/Screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Screens/adminscreen.dart';
 import 'utils.dart';
 import 'dart:convert';
@@ -192,6 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -239,16 +240,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Sign Out'),
                 value: Choice.delete,
               ),
-              // const PopupMenuItem<Choice>(
-              //   value: Choice.delete,
-              //   child: FlatButton(
-              //     child: Text("Sign Out"),
-              //     onPressed: () {
-              //       _auth.signOut();
-              //       Navigator.pop(context);
-              //     },
-              //   ),
-              // ),
             ],
           ),
         ],
@@ -436,6 +427,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handle(String text) {
+    // implement the logic to store the data in firebase db
+    // and reload the data from db to update the ui
+
+    _firestore.collection('faces').doc(_auth.currentUser.uid).set({
+      'embedding': data[text] = e1,
+      'name': _name,
+      'timestamp': DateTime.now(),
+      'uid': _auth.currentUser.uid,
+    });
+
     data[text] = e1;
     jsonFile.writeAsStringSync(json.encode(data));
     _initializeCamera();
