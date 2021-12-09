@@ -213,6 +213,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   return SignIn();
                 }));
               } else if (result == Choice.herder) {
+                setState(() {
+                  _camera = null;
+                });
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -385,7 +388,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _camera = null;
     });
-    print("Adding new face");
     var alert = new AlertDialog(
       title: new Text("Add Face"),
       content: new Row(
@@ -430,11 +432,23 @@ class _MyHomePageState extends State<MyHomePage> {
     // implement the logic to store the data in firebase db
     // and reload the data from db to update the ui
 
-    _firestore.collection('faces').doc(_auth.currentUser.uid).set({
+    // _firestore.collection('faces').doc(_auth.currentUser.uid).set({
+    //   'embedding': data[text] = e1,
+    //   'name': _name,
+    //   'timestamp': DateTime.now(),
+    //   'uid': _auth.currentUser.uid,
+    // });
+    _firestore
+        .collection('allfaces')
+        .doc(_auth.currentUser.uid)
+        .collection('faces')
+        .doc()
+        .set({
+      'name': text,
       'embedding': data[text] = e1,
-      'name': _name,
-      'timestamp': DateTime.now(),
       'uid': _auth.currentUser.uid,
+      'login': _auth.currentUser.email,
+      'timestamp': DateTime.now(),
     });
 
     data[text] = e1;

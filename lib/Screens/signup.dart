@@ -37,7 +37,7 @@ class _SignUpState extends State<SignUp> {
             .createUserWithEmailAndPassword(email: _email, password: _password);
         User user = authResult.user;
         if (user != null) {
-          _firestore.collection('users').doc(user.uid).set({
+          _firestore.collection('users').add({
             'uid': user.uid,
             'name': _name,
             'email': _email,
