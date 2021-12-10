@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 class AdminContent extends StatefulWidget {
   @override
@@ -120,7 +119,8 @@ class _AdminContentState extends State<AdminContent> {
                           itemBuilder: (context, index) {
                             return ListTile(
                               title: Text(
-                                  snapshot.data.docs[index].data()['name']),
+                                snapshot.data.docs[index].data()['name'],
+                              ),
                             );
                           },
                         );

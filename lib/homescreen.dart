@@ -429,8 +429,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handle(String text) {
-    // implement the logic to store the data in firebase db
-    // and reload the data from db to update the ui
 
     // _firestore.collection('faces').doc(_auth.currentUser.uid).set({
     //   'embedding': data[text] = e1,
