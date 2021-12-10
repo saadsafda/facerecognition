@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:Face_recognition/Screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'Screens/adminscreen.dart';
-import 'utils.dart';
+import 'adminscreen.dart';
+import '../utils.dart';
 import 'dart:convert';
-import 'detector_painters.dart';
+import '../detector_painters.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +17,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
-class MyHomePage extends StatefulWidget {
+class MyAddFaceScreen extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyAddFaceScreenState createState() => _MyAddFaceScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
   File jsonFile;
   dynamic _scanResults;
   CameraController _camera;
@@ -198,77 +198,98 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Face recognition'),
-        actions: <Widget>[
-          PopupMenuButton<Choice>(
-            onSelected: (Choice result) {
-              // if (result == Choice.delete)
-              //   _resetFile();
-              // else
-              //   _viewLabels();
+        backgroundColor: Colors.black,
+        centerTitle: true,
+        elevation: 0.0,
+        //   actions: <Widget>[
+        //     PopupMenuButton<Choice>(
+        //       onSelected: (Choice result) {
+        //         // if (result == Choice.delete)
+        //         //   _resetFile();
+        //         // else
+        //         //   _viewLabels();
 
-              if (result == Choice.delete) {
-                _auth.signOut();
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return SignIn();
-                }));
-              } else if (result == Choice.herder) {
-                setState(() {
-                  _camera = null;
-                });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminScreen(),
-                  ),
-                );
-              } else {
-                _viewLabels();
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
-              // const PopupMenuItem<Choice>(
-              //   child: Text('Remove all faces'),
-              //   value: Choice.delete,
-              // ),
-              const PopupMenuItem<Choice>(
-                child: Text('Admin Panel'),
-                value: Choice.herder,
-              ),
-              const PopupMenuItem<Choice>(
-                child: Text('View Saved Faces'),
-                value: Choice.view,
-              ),
-              const PopupMenuItem<Choice>(
-                child: Text('Sign Out'),
-                value: Choice.delete,
-              ),
-            ],
+        //         if (result == Choice.delete) {
+        //           _auth.signOut();
+        //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //             return SignIn();
+        //           }));
+        //         } else if (result == Choice.herder) {
+        //           setState(() {
+        //             _camera = null;
+        //           });
+        //           Navigator.push(
+        //             context,
+        //             MaterialPageRoute(
+        //               builder: (context) => AdminScreen(),
+        //             ),
+        //           );
+        //         } else {
+        //           _viewLabels();
+        //         }
+        //       },
+        //       itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
+        //         // const PopupMenuItem<Choice>(
+        //         //   child: Text('Remove all faces'),
+        //         //   value: Choice.delete,
+        //         // ),
+        //         const PopupMenuItem<Choice>(
+        //           child: Text('Admin Panle'),
+        //           value: Choice.herder,
+        //         ),
+        //         const PopupMenuItem<Choice>(
+        //           child: Text('View Saved Faces'),
+        //           value: Choice.view,
+        //         ),
+        //         const PopupMenuItem<Choice>(
+        //           child: Text('Sign Out'),
+        //           value: Choice.delete,
+        //         ),
+        //       ],
+        //     ),
+        //   ],
+      ),
+      body: _buildImage(),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            title: Text('Camera'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            title: Text('Profile'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            title: Text('Profile'),
           ),
         ],
       ),
-      body: _buildImage(),
-      floatingActionButton:
-          Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-        // FloatingActionButton(
-        //   backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
-        //   child: Icon(Icons.add),
-        //   onPressed: () {
-        //     if (_faceFound) _addLabel();
-        //   },
-        //   heroTag: null,
-        // ),
-        // SizedBox(
-        //   height: 10,
-        // ),
-        FloatingActionButton(
-          onPressed: _toggleCameraDirection,
-          heroTag: null,
-          child: _direction == CameraLensDirection.back
-              ? const Icon(Icons.camera_front)
-              : const Icon(Icons.camera_rear),
-        ),
-      ]),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
+            child: Icon(Icons.add),
+            onPressed: () {
+              if (_faceFound) _addLabel();
+            },
+            heroTag: null,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton(
+            onPressed: _toggleCameraDirection,
+            heroTag: null,
+            child: _direction == CameraLensDirection.back
+                ? const Icon(Icons.camera_front)
+                : const Icon(Icons.camera_rear),
+          ),
+        ],
+      ),
     );
   }
 
@@ -344,45 +365,29 @@ class _MyHomePageState extends State<MyHomePage> {
     String name;
     var alert = new AlertDialog(
       title: new Text("Saved Faces"),
-      content: StreamBuilder(
-        stream: _firestore
-            .collection('allfaces')
-            .doc(_auth.currentUser.uid)
-            .collection('faces')
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return ListView.builder(
-            padding: new EdgeInsets.all(2),
-            itemCount: snapshot.data.docs.length,
-            itemBuilder: (BuildContext context, int index) {
-              // name = data.keys.elementAt(index);
-              name = snapshot.data.docs[index].data()['name'];
-              return new Column(
-                children: <Widget>[
-                  new ListTile(
-                    title: new Text(
-                      name,
-                      style: new TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[400],
-                      ),
+      content: new ListView.builder(
+          padding: new EdgeInsets.all(2),
+          itemCount: data.length,
+          itemBuilder: (BuildContext context, int index) {
+            name = data.keys.elementAt(index);
+            return new Column(
+              children: <Widget>[
+                new ListTile(
+                  title: new Text(
+                    name,
+                    style: new TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[400],
                     ),
                   ),
-                  new Padding(
-                    padding: EdgeInsets.all(2),
-                  ),
-                  new Divider(),
-                ],
-              );
-            },
-          );
-        },
-      ),
+                ),
+                new Padding(
+                  padding: EdgeInsets.all(2),
+                ),
+                new Divider(),
+              ],
+            );
+          }),
       actions: <Widget>[
         new FlatButton(
           child: Text("OK"),
