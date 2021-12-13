@@ -1,5 +1,6 @@
 import 'package:Face_recognition/Screens/addfacescreen.dart';
 import 'package:Face_recognition/Screens/signin.dart';
+import 'package:Face_recognition/homescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,194 +15,207 @@ class _AdminContentState extends State<AdminContent> {
   final _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Admin Content'),
-        actions: [
-          PopupMenuButton(
-            onSelected: (value) {
-              if (value == 'addface') {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyAddFaceScreen(),
-                    ));
-              } else if (value == 'logout') {
-                _auth.signOut();
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SignIn(),
-                    ));
-              }
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyHomePage()),
+              );
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'addface',
-                child: Text('Add Face'),
-              ),
-              PopupMenuItem(
-                value: 'logout',
-                child: Text('Logout'),
-              ),
-            ],
           ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text(
-                    'N A M E S',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+          title: Text('Admin Content'),
+          actions: [
+            PopupMenuButton(
+              onSelected: (value) {
+                if (value == 'addface') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyAddFaceScreen(),
+                      ));
+                } else if (value == 'logout') {
+                  _auth.signOut();
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyHomePage(),
+                      ));
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'addface',
+                  child: Text('Add Face'),
+                ),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Text('Logout'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      'N A M E S',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: 100,
-                    child: StreamBuilder(
-                      stream: _firestore
-                          .collection('allfaces')
-                          .doc(_auth.currentUser.uid)
-                          .collection('faces')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        return ListView.builder(
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          LoginUserFaceContent(
-                                        name: snapshot.data.docs[index]
-                                            .data()['name'],
-                                        id: snapshot.data.docs[index].id,
+                    Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: 100,
+                      child: StreamBuilder(
+                        stream: _firestore
+                            .collection('allfaces')
+                            .doc(_auth.currentUser.uid)
+                            .collection('faces')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return ListView.builder(
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginUserFaceContent(
+                                          name: snapshot.data.docs[index]
+                                              .data()['name'],
+                                          id: snapshot.data.docs[index].id,
+                                        ),
                                       ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "• " +
+                                        snapshot.data.docs[index]
+                                            .data()['name'],
+                                    style: TextStyle(
+                                      color: Colors.grey,
                                     ),
-                                  );
-                                },
-                                child: Text(
-                                  "• " +
-                                      snapshot.data.docs[index].data()['name'],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      'F A C E S',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: 100,
+                      child: StreamBuilder(
+                        stream: _firestore
+                            .collection('allfaces')
+                            .doc(_auth.currentUser.uid)
+                            .collection('faces')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return ListView.builder(
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                  snapshot.data.docs[index].data()['name'],
                                   style: TextStyle(
                                     color: Colors.grey,
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text(
-                    'F A C E S',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: 100,
-                    child: StreamBuilder(
-                      stream: _firestore
-                          .collection('allfaces')
-                          .doc(_auth.currentUser.uid)
-                          .collection('faces')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: CircularProgressIndicator(),
+                              );
+                            },
                           );
-                        }
-                        return ListView.builder(
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(
-                                snapshot.data.docs[index].data()['name'],
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text(
-                    'A P P L E T',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      'A P P L E T',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: 100,
-                    child: StreamBuilder(
-                      stream: _firestore
-                          .collection('allfaces')
-                          .doc(_auth.currentUser.uid)
-                          .collection('faces')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: CircularProgressIndicator(),
+                    Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: 100,
+                      child: StreamBuilder(
+                        stream: _firestore
+                            .collection('allfaces')
+                            .doc(_auth.currentUser.uid)
+                            .collection('faces')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return ListView.builder(
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                  snapshot.data.docs[index].data()['name'],
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            },
                           );
-                        }
-                        return ListView.builder(
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(
-                                snapshot.data.docs[index].data()['name'],
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,10 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:io';
-import 'package:Face_recognition/Screens/signin.dart';
+// import 'package:Face_recognition/Screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'adminscreen.dart';
+// import 'adminscreen.dart';
 import '../utils.dart';
 import 'dart:convert';
 import '../detector_painters.dart';
@@ -197,75 +197,12 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        centerTitle: true,
-        elevation: 0.0,
-        //   actions: <Widget>[
-        //     PopupMenuButton<Choice>(
-        //       onSelected: (Choice result) {
-        //         // if (result == Choice.delete)
-        //         //   _resetFile();
-        //         // else
-        //         //   _viewLabels();
-
-        //         if (result == Choice.delete) {
-        //           _auth.signOut();
-        //           Navigator.push(context, MaterialPageRoute(builder: (context) {
-        //             return SignIn();
-        //           }));
-        //         } else if (result == Choice.herder) {
-        //           setState(() {
-        //             _camera = null;
-        //           });
-        //           Navigator.push(
-        //             context,
-        //             MaterialPageRoute(
-        //               builder: (context) => AdminScreen(),
-        //             ),
-        //           );
-        //         } else {
-        //           _viewLabels();
-        //         }
-        //       },
-        //       itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
-        //         // const PopupMenuItem<Choice>(
-        //         //   child: Text('Remove all faces'),
-        //         //   value: Choice.delete,
-        //         // ),
-        //         const PopupMenuItem<Choice>(
-        //           child: Text('Admin Panle'),
-        //           value: Choice.herder,
-        //         ),
-        //         const PopupMenuItem<Choice>(
-        //           child: Text('View Saved Faces'),
-        //           value: Choice.view,
-        //         ),
-        //         const PopupMenuItem<Choice>(
-        //           child: Text('Sign Out'),
-        //           value: Choice.delete,
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-      ),
-      body: _buildImage(),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            title: Text('Camera'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            title: Text('Profile'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            title: Text('Profile'),
-          ),
-        ],
+      body: SafeArea(
+        child: Container(
+          color: Colors.black,
+          padding: EdgeInsets.only(top: 20.0, bottom: 40.0),
+          child: _buildImage(),
+        ),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -287,6 +224,9 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
             child: _direction == CameraLensDirection.back
                 ? const Icon(Icons.camera_front)
                 : const Icon(Icons.camera_rear),
+          ),
+          SizedBox(
+            height: 50,
           ),
         ],
       ),

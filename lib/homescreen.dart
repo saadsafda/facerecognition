@@ -196,79 +196,84 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Face recognition'),
-        actions: <Widget>[
-          PopupMenuButton<Choice>(
-            onSelected: (Choice result) {
-              // if (result == Choice.delete)
-              //   _resetFile();
-              // else
-              //   _viewLabels();
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Face recognition'),
+          actions: <Widget>[
+            PopupMenuButton<Choice>(
+              onSelected: (Choice result) {
+                // if (result == Choice.delete)
+                //   _resetFile();
+                // else
+                //   _viewLabels();
 
-              if (result == Choice.delete) {
-                _auth.signOut();
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return SignIn();
-                }));
-              } else if (result == Choice.herder) {
-                setState(() {
-                  _camera = null;
-                });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminScreen(),
-                  ),
-                );
-              } else {
-                _viewLabels();
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
-              // const PopupMenuItem<Choice>(
-              //   child: Text('Remove all faces'),
-              //   value: Choice.delete,
-              // ),
-              const PopupMenuItem<Choice>(
-                child: Text('Admin Panel'),
-                value: Choice.herder,
-              ),
-              const PopupMenuItem<Choice>(
-                child: Text('View Saved Faces'),
-                value: Choice.view,
-              ),
-              const PopupMenuItem<Choice>(
-                child: Text('Sign Out'),
-                value: Choice.delete,
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: _buildImage(),
-      floatingActionButton:
-          Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-        // FloatingActionButton(
-        //   backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
-        //   child: Icon(Icons.add),
-        //   onPressed: () {
-        //     if (_faceFound) _addLabel();
-        //   },
-        //   heroTag: null,
-        // ),
-        // SizedBox(
-        //   height: 10,
-        // ),
-        FloatingActionButton(
-          onPressed: _toggleCameraDirection,
-          heroTag: null,
-          child: _direction == CameraLensDirection.back
-              ? const Icon(Icons.camera_front)
-              : const Icon(Icons.camera_rear),
+                if (result == Choice.delete) {
+                  _auth.signOut();
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SignIn();
+                  }));
+                } else if (result == Choice.herder) {
+                  setState(() {
+                    _camera = null;
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminScreen(),
+                    ),
+                  );
+                } else {
+                  _viewLabels();
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
+                // const PopupMenuItem<Choice>(
+                //   child: Text('Remove all faces'),
+                //   value: Choice.delete,
+                // ),
+                const PopupMenuItem<Choice>(
+                  child: Text('Admin Panel'),
+                  value: Choice.herder,
+                ),
+                const PopupMenuItem<Choice>(
+                  child: Text('View Saved Faces'),
+                  value: Choice.view,
+                ),
+                const PopupMenuItem<Choice>(
+                  child: Text('Sign Out'),
+                  value: Choice.delete,
+                ),
+              ],
+            ),
+          ],
         ),
-      ]),
+        body: _buildImage(),
+        floatingActionButton:
+            Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+          // FloatingActionButton(
+          //   backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
+          //   child: Icon(Icons.add),
+          //   onPressed: () {
+          //     if (_faceFound) _addLabel();
+          //   },
+          //   heroTag: null,
+          // ),
+          // SizedBox(
+          //   height: 10,
+          // ),
+          FloatingActionButton(
+            onPressed: _toggleCameraDirection,
+            heroTag: null,
+            child: _direction == CameraLensDirection.back
+                ? const Icon(Icons.camera_front)
+                : const Icon(Icons.camera_rear),
+          ),
+        ]),
+      ),
     );
   }
 
