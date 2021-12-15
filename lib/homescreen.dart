@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_field, unused_element
 
 import 'dart:io';
 import 'package:Face_recognition/Screens/signin.dart';
@@ -202,7 +202,10 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Text('Face recognition'),
+          leading: IconButton(
+              icon: Icon(Icons.add, color: Colors.blue), onPressed: () {}),
           actions: <Widget>[
             PopupMenuButton<Choice>(
               onSelected: (Choice result) {
@@ -217,18 +220,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     return SignIn();
                   }));
                 } else if (result == Choice.herder) {
-                  setState(() {
-                    _camera = null;
-                  });
+                  // setState(() {
+                  //   _camera = null;
+                  // });
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => AdminScreen(),
                     ),
                   );
-                } else {
-                  _viewLabels();
                 }
+                // else {
+                //   _viewLabels();
+                // }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
                 // const PopupMenuItem<Choice>(
@@ -239,10 +243,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text('Admin Panel'),
                   value: Choice.herder,
                 ),
-                const PopupMenuItem<Choice>(
-                  child: Text('View Saved Faces'),
-                  value: Choice.view,
-                ),
+                // const PopupMenuItem<Choice>(
+                //   child: Text('View Saved Faces'),
+                //   value: Choice.view,
+                // ),
                 const PopupMenuItem<Choice>(
                   child: Text('Sign Out'),
                   value: Choice.delete,
@@ -256,9 +260,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Column(mainAxisAlignment: MainAxisAlignment.end, children: [
           // FloatingActionButton(
           //   backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
-          //   child: Icon(Icons.add),
+          // child: Icon(Icons.add),
           //   onPressed: () {
           //     if (_faceFound) _addLabel();
+
           //   },
           //   heroTag: null,
           // ),
@@ -326,6 +331,18 @@ class _MyHomePageState extends State<MyHomePage> {
     double minDist = 999;
     double currDist = 0.0;
     String predRes = "NOT RECOGNIZED";
+
+    // for (var i = 0; i < data.length; i++) {
+    //   currDist = 0.0;
+    //   for (var j = 0; j < currEmb.length; j++) {
+    //     currDist += (currEmb[j] - data[i][j]) * (currEmb[j] - data[i][j]);
+    //   }
+    //   if (currDist < minDist) {
+    //     minDist = currDist;
+    //     predRes = data[i][data[i].length - 1];
+    //   }
+    // }
+
     for (String label in data.keys) {
       currDist = euclideanDistance(data[label], currEmb);
       if (currDist <= threshold && currDist < minDist) {

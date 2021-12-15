@@ -1,8 +1,9 @@
-import 'package:Face_recognition/Screens/addfacescreen.dart';
-import 'package:Face_recognition/Screens/signin.dart';
+// import 'package:Face_recognition/Screens/addfacescreen.dart';
+import 'package:Face_recognition/Screens/adminfacecontent.dart';
+import 'package:Face_recognition/Screens/settingscreen.dart';
+// import 'package:Face_recognition/Screens/signin.dart';
 import 'package:Face_recognition/homescreen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 
 class AdminContent extends StatefulWidget {
@@ -11,14 +12,13 @@ class AdminContent extends StatefulWidget {
 }
 
 class _AdminContentState extends State<AdminContent> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -28,220 +28,111 @@ class _AdminContentState extends State<AdminContent> {
               );
             },
           ),
-          title: Text('Admin Content'),
-          actions: [
-            PopupMenuButton(
-              onSelected: (value) {
-                if (value == 'addface') {
-                  Navigator.push(
+          title: Text('Admin Panel'),
+          // actions: [
+          //   PopupMenuButton(
+          //     onSelected: (value) {
+          //       if (value == 'addface') {
+          //         Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => MyAddFaceScreen(),
+          //             ));
+          //       } else if (value == 'logout') {
+          //         Navigator.pushReplacement(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => MyHomePage(),
+          //             ));
+          //       }
+          //     },
+          //     itemBuilder: (context) => [
+          //       PopupMenuItem(
+          //         value: 'addface',
+          //         child: Text('Add Face'),
+          //       ),
+          //       PopupMenuItem(
+          //         value: 'logout',
+          //         child: Text('Logout'),
+          //       ),
+          //     ],
+          //   ),
+          // ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Card(
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MyAddFaceScreen(),
-                      ));
-                } else if (value == 'logout') {
-                  _auth.signOut();
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MyHomePage(),
-                      ));
-                }
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 'addface',
-                  child: Text('Add Face'),
+                        builder: (context) => MyAdminFaceContent(),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const ListTile(
+                            title: Text('Faces'),
+                            subtitle: Text('All the faces for attendance.'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                PopupMenuItem(
-                  value: 'logout',
-                  child: Text('Logout'),
+                SizedBox(
+                  height: 10,
+                ),
+                Card(
+                  child: GestureDetector(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const ListTile(
+                            title: Text('System Users'),
+                            subtitle:
+                                Text('system users to access admin panel.'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Card(
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SettingScreen(),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const ListTile(
+                            title: Text('Settings'),
+                            subtitle: Text('Settings to configure the system.'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text(
-                      'N A M E S',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: 100,
-                      child: StreamBuilder(
-                        stream: _firestore
-                            .collection('allfaces')
-                            .doc(_auth.currentUser.uid)
-                            .collection('faces')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return ListView.builder(
-                            itemCount: snapshot.data.docs.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            LoginUserFaceContent(
-                                          name: snapshot.data.docs[index]
-                                              .data()['name'],
-                                          id: snapshot.data.docs[index].id,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    "• " +
-                                        snapshot.data.docs[index]
-                                            .data()['name'],
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text(
-                      'F A C E S',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: 100,
-                      child: StreamBuilder(
-                        stream: _firestore
-                            .collection('allfaces')
-                            .doc(_auth.currentUser.uid)
-                            .collection('faces')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return ListView.builder(
-                            itemCount: snapshot.data.docs.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                  snapshot.data.docs[index].data()['name'],
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text(
-                      'A P P L E T',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: 100,
-                      child: StreamBuilder(
-                        stream: _firestore
-                            .collection('allfaces')
-                            .doc(_auth.currentUser.uid)
-                            .collection('faces')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return ListView.builder(
-                            itemCount: snapshot.data.docs.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                  snapshot.data.docs[index].data()['name'],
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class LoginUserFaceContent extends StatelessWidget {
-  LoginUserFaceContent({this.name, this.id});
-
-  final String name;
-  final String id;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Face Content'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: Center(
-          child: Column(
-            children: [
-              Text(name, style: TextStyle(fontSize: 20)),
-              Text(id),
-            ],
           ),
         ),
       ),

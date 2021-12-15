@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_element
 
+import 'dart:ffi';
 import 'dart:io';
 // import 'package:Face_recognition/Screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,7 +35,9 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
   Directory tempDir;
   List e1;
   bool _faceFound = false;
+  final TextEditingController _id = new TextEditingController();
   final TextEditingController _name = new TextEditingController();
+  final TextEditingController _designation = new TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -197,37 +200,68 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Adding new Face'),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Container(
-          color: Colors.black,
-          padding: EdgeInsets.only(top: 20.0, bottom: 40.0),
+          color: Colors.white,
+          padding:
+              EdgeInsets.only(top: 10.0, bottom: 80.0, left: 20.0, right: 20.0),
           child: _buildImage(),
         ),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          FloatingActionButton(
-            backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
-            child: Icon(Icons.add),
-            onPressed: () {
-              if (_faceFound) _addLabel();
-            },
-            heroTag: null,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          FloatingActionButton(
-            onPressed: _toggleCameraDirection,
-            heroTag: null,
-            child: _direction == CameraLensDirection.back
-                ? const Icon(Icons.camera_front)
-                : const Icon(Icons.camera_rear),
-          ),
-          SizedBox(
-            height: 50,
-          ),
+          Padding(
+              padding: const EdgeInsets.only(left: 100.0, right: 70.0),
+              child: _faceFound
+                  ? ElevatedButton(
+                      onPressed: () {
+                        if (_faceFound) {
+                          _addLabel();
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.camera_alt),
+                          Text('Capture Photo'),
+                        ],
+                      ),
+                    )
+                  : ElevatedButton(
+                      onPressed: null,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.camera_alt),
+                          Text('Capture Photo'),
+                        ],
+                      ),
+                    )),
+
+          // FloatingActionButton(
+          //   backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
+          //   child: Icon(Icons.add),
+          //   onPressed: () {
+          //     if (_faceFound) _addLabel();
+          //   },
+          //   heroTag: null,
+          // ),
+          // SizedBox(
+          //   height: 10,
+          // ),
+          // FloatingActionButton(
+          //   onPressed: _toggleCameraDirection,
+          //   heroTag: null,
+          //   child: _direction == CameraLensDirection.back
+          //       ? const Icon(Icons.camera_front)
+          //       : const Icon(Icons.camera_rear),
+          // ),
         ],
       ),
     );
@@ -351,25 +385,42 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
     });
     var alert = new AlertDialog(
       title: new Text("Add Face"),
-      content: new Row(
-        children: <Widget>[
-          new Expanded(
-            child: new TextField(
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              controller: _id,
+              decoration: new InputDecoration(
+                labelText: "Face Id",
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            TextField(
               controller: _name,
               autofocus: true,
               decoration: new InputDecoration(
-                labelText: "Name",
-                icon: new Icon(Icons.face),
+                labelText: "Face name",
               ),
             ),
-          )
-        ],
+            SizedBox(
+              height: 10,
+            ),
+            TextField(
+              controller: _designation,
+              decoration: new InputDecoration(
+                labelText: "Face designation",
+              ),
+            ),
+          ],
+        ),
       ),
       actions: <Widget>[
         new FlatButton(
             child: Text("Save"),
             onPressed: () {
-              _handle(_name.text.toUpperCase());
+              _handle(_name.text);
               _name.clear();
               Navigator.pop(context);
             }),
@@ -396,7 +447,9 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
         .collection('faces')
         .doc()
         .set({
+      'id': _id.text,
       'name': text,
+      'designation': _designation.text,
       'embedding': data[text] = e1,
       'uid': _auth.currentUser.uid,
       'login': _auth.currentUser.email,

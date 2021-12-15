@@ -47,8 +47,30 @@ class _SignUpState extends State<SignUp> {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => MyHomePage()));
         }
-      } catch (e) {
-        print(e.message);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          print("Password Provided is too Weak");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Password Provided is too Weak",
+                style: TextStyle(fontSize: 18.0, color: Colors.black),
+              ),
+            ),
+          );
+        } else if (e.code == 'email-already-in-use') {
+          print("Account Already exists");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Account Already exists",
+                style: TextStyle(fontSize: 18.0, color: Colors.black),
+              ),
+            ),
+          );
+        }
       }
       setState(() {
         _isLoading = false;
@@ -80,21 +102,15 @@ class _SignUpState extends State<SignUp> {
                     bottomLeft: Radius.circular(90),
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
+                child: Center(
+                  child: Text(
+                    "Sign Up",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                  ],
+                  ),
                 ),
               ),
               Container(
