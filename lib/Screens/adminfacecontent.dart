@@ -60,11 +60,23 @@ class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                snapshot.data.docs[index].data()['name'],
-                                style: TextStyle(
-                                  fontSize: 20,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    snapshot.data.docs[index].data()['name'],
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Text(
+                                    snapshot.data.docs[index]
+                                        .data()['designation'],
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
                               ),
                               Row(
                                 children: [

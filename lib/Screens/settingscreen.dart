@@ -26,8 +26,14 @@ class _SettingScreenState extends State<SettingScreen> {
       });
       _formKey.currentState.save();
       try {
-        _firestore.collection('SettingsKey').add({
-          'uid': _auth.currentUser.uid,
+        // implement the edit form method in cloud firestore
+        // and then use the edit form method to edit the user
+        await _firestore
+            .collection('SettingsKey')
+            .doc(_auth.currentUser.uid)
+            .collection('settings')
+            .doc('settingId')
+            .update({
           'SowaanERP': _erpUrl,
           'ApiKey': _apiKey,
           'ApiSecret': _apiSecret,
@@ -70,75 +76,93 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          TextFormField(
-                            keyboardType: TextInputType.url,
-                            onSaved: (input) => _erpUrl = input,
-                            autofocus: true,
-                            decoration: kTextFieldDecoration.copyWith(
-                              hintText: 'SowaanERP URL',
-                              prefixIcon: Material(
-                                elevation: 0,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30)),
-                                child: Icon(
-                                  Icons.link,
-                                  color: Theme.of(context).primaryColor,
+                  StreamBuilder(
+                      stream: _firestore
+                          .collection('SettingsKey')
+                          .doc(_auth.currentUser.uid)
+                          .collection('settings')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        return Container(
+                          padding: EdgeInsets.all(16.0),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                TextFormField(
+                                  keyboardType: TextInputType.url,
+                                  initialValue: snapshot.hasData
+                                      ? snapshot.data.docs[0]
+                                          .data()['SowaanERP']
+                                      : '',
+                                  onSaved: (input) => _erpUrl = input,
+                                  autofocus: true,
+                                  decoration: kTextFieldDecoration.copyWith(
+                                    hintText: 'SowaanERP URL',
+                                    prefixIcon: Material(
+                                      elevation: 0,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(30)),
+                                      child: Icon(
+                                        Icons.link,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.url,
+                                  initialValue:
+                                      snapshot.data.docs[0].data()['ApiKey'],
+                                  onSaved: (input) => _apiKey = input,
+                                  decoration: kTextFieldDecoration.copyWith(
+                                    hintText: 'Api Key',
+                                    prefixIcon: Material(
+                                      elevation: 0,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(30)),
+                                      child: Icon(
+                                        Icons.api_rounded,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                TextFormField(
+                                  initialValue: snapshot.hasData
+                                      ? snapshot.data.docs[0]
+                                          .data()['ApiSecret']
+                                      : 'Api Secret',
+                                  onSaved: (input) => _apiSecret = input,
+                                  decoration: kTextFieldDecoration.copyWith(
+                                    hintText: 'Api Secret',
+                                    prefixIcon: Material(
+                                      elevation: 0,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(30)),
+                                      child: Icon(
+                                        Icons.vpn_key,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                  obscureText: true,
+                                ),
+                                BottonWidgets(
+                                  onPressed: _submit,
+                                  text: 'Submit',
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          TextFormField(
-                            keyboardType: TextInputType.url,
-                            onSaved: (input) => _apiKey = input,
-                            decoration: kTextFieldDecoration.copyWith(
-                              hintText: 'Api Key',
-                              prefixIcon: Material(
-                                elevation: 0,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30)),
-                                child: Icon(
-                                  Icons.api_rounded,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          TextFormField(
-                            onSaved: (input) => _apiSecret = input,
-                            decoration: kTextFieldDecoration.copyWith(
-                              hintText: 'Api Secret',
-                              prefixIcon: Material(
-                                elevation: 0,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30)),
-                                child: Icon(
-                                  Icons.vpn_key,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            ),
-                            obscureText: true,
-                          ),
-                          BottonWidgets(
-                            onPressed: _submit,
-                            text: 'Submit',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                        );
+                      }),
                 ],
               ),
             ),

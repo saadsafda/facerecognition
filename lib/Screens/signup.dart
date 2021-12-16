@@ -44,6 +44,18 @@ class _SignUpState extends State<SignUp> {
             'password': _password,
             'date': DateTime.now(),
           });
+          _firestore
+              .collection('SettingsKey')
+              .doc(user.uid)
+              .collection('settings')
+              .doc('settingId')
+              .set({
+            'uid': user.uid,
+            'SowaanERP': 'SowaanERP URL',
+            'ApiKey': 'Api Key',
+            'ApiSecret': 'Api Secret',
+            'date': DateTime.now(),
+          });
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => MyHomePage()));
         }

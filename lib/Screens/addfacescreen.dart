@@ -422,6 +422,7 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
             onPressed: () {
               _handle(_name.text);
               _name.clear();
+              _designation.clear();
               Navigator.pop(context);
             }),
         new FlatButton(
