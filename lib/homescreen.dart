@@ -332,26 +332,37 @@ class _MyHomePageState extends State<MyHomePage> {
     double currDist = 0.0;
     String predRes = "NOT RECOGNIZED";
 
-    // for (var i = 0; i < data.length; i++) {
-    //   currDist = 0.0;
-    //   for (var j = 0; j < currEmb.length; j++) {
-    //     currDist += (currEmb[j] - data[i][j]) * (currEmb[j] - data[i][j]);
-    //   }
-    //   if (currDist < minDist) {
-    //     minDist = currDist;
-    //     predRes = data[i][data[i].length - 1];
+    _firestore
+        .collection('allfaces')
+        .doc(_auth.currentUser.uid)
+        .collection('faces')
+        .get()
+        .then((value) {
+      for (var doc in value.docs) {
+        currDist = 0.0;
+        for (int i = 0; i < currEmb.length; i++) {
+          currDist +=
+              (currEmb[i] - doc.data()['embedding'][i]).abs().toDouble();
+        }
+        if (currDist < minDist) {
+          minDist = currDist;
+          predRes = doc.data()['name'];
+        }
+      }
+      print(minDist.toString() + " " + predRes);
+      return predRes;
+    });
+    return predRes;
+
+    // for (String label in data.keys) {
+    // currDist = euclideanDistance(data[label], currEmb);
+    // if (currDist <= threshold && currDist < minDist) {
+    // minDist = currDist;
+    // predRes = label;
     //   }
     // }
-
-    for (String label in data.keys) {
-      currDist = euclideanDistance(data[label], currEmb);
-      if (currDist <= threshold && currDist < minDist) {
-        minDist = currDist;
-        predRes = label;
-      }
-    }
-    print(minDist.toString() + " " + predRes);
-    return predRes;
+    // print(minDist.toString() + " " + predRes);
+    // return predRes;
   }
 
   void _resetFile() {

@@ -13,7 +13,7 @@ class MyAdminFaceContent extends StatefulWidget {
 class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
-  String _editname;
+  String _editname, _editid, _editdesignation;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,17 +125,52 @@ class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
                                         builder: (context) {
                                           return AlertDialog(
                                             title: Text('Edit'),
-                                            content: TextField(
-                                              decoration: InputDecoration(
-                                                labelText: snapshot
-                                                    .data.docs[index]
-                                                    .data()['name'],
+                                            content: SingleChildScrollView(
+                                              child: Column(
+                                                children: [
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController()
+                                                          ..text = snapshot
+                                                              .data.docs[index]
+                                                              .data()['id'],
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Edit Id',
+                                                    ),
+                                                    onChanged: (value) {
+                                                      _editid = value;
+                                                    },
+                                                  ),
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController()
+                                                          ..text = snapshot
+                                                              .data.docs[index]
+                                                              .data()['name'],
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Edit Name',
+                                                    ),
+                                                    onChanged: (value) {
+                                                      _editname = value;
+                                                    },
+                                                  ),
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController()
+                                                          ..text = snapshot.data
+                                                                  .docs[index]
+                                                                  .data()[
+                                                              'designation'],
+                                                    decoration: InputDecoration(
+                                                      labelText:
+                                                          'Edit designation',
+                                                    ),
+                                                    onChanged: (value) {
+                                                      _editdesignation = value;
+                                                    },
+                                                  ),
+                                                ],
                                               ),
-                                              onChanged: (value) {
-                                                _editname = value;
-
-                                                // show the name in the textfield in database
-                                              },
                                             ),
                                             actions: [
                                               FlatButton(
@@ -156,6 +191,9 @@ class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
                                                           .data.docs[index].id)
                                                       .update({
                                                     'name': _editname,
+                                                    'id': _editid,
+                                                    'designation':
+                                                        _editdesignation,
                                                   });
                                                   Navigator.pop(context);
                                                 },

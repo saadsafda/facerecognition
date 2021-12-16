@@ -2,6 +2,7 @@
 
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 // import 'package:Face_recognition/Screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,7 +36,7 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
   Directory tempDir;
   List e1;
   bool _faceFound = false;
-  final TextEditingController _id = new TextEditingController();
+  String _id;
   final TextEditingController _name = new TextEditingController();
   final TextEditingController _designation = new TextEditingController();
   @override
@@ -389,10 +390,14 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
         child: Column(
           children: [
             TextField(
-              controller: _id,
+              controller: TextEditingController()
+                ..text = Random().nextInt(1000).toString(),
               decoration: new InputDecoration(
                 labelText: "Face Id",
               ),
+              onChanged: (value) {
+                _id = value;
+              },
             ),
             SizedBox(
               height: 10,
@@ -448,7 +453,7 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
         .collection('faces')
         .doc()
         .set({
-      'id': _id.text,
+      'id': _id,
       'name': text,
       'designation': _designation.text,
       'embedding': data[text] = e1,
