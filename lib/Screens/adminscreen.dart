@@ -32,23 +32,21 @@ class _AdminScreenState extends State<AdminScreen> {
             context, MaterialPageRoute(builder: (context) => AdminContent()));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
-          print("No User Found for that Email");
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.red,
               content: Text(
-                "No User Found for that Email",
+                "No Admin Found for that Email",
                 style: TextStyle(fontSize: 18.0, color: Colors.white),
               ),
             ),
           );
         } else if (e.code == 'wrong-password') {
-          print("Wrong Password Provided by User");
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.red,
               content: Text(
-                "Wrong Password Provided by User",
+                "Wrong Password Provided by Admin",
                 style: TextStyle(fontSize: 18.0, color: Colors.white),
               ),
             ),
@@ -91,7 +89,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      "Sign In",
+                      "Admin Sign In",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 30,

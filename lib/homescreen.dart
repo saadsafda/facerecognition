@@ -323,36 +323,37 @@ class _MyHomePageState extends State<MyHomePage> {
     interpreter.run(input, output);
     output = output.reshape([192]);
     e1 = List.from(output);
-    return compare(e1).toUpperCase();
+    return compare(e1).toString();
   }
 
-  String compare(List currEmb) {
-    if (data.length == 0) return "No Face saved";
+  Future<String> compare(List currEmb) async {
+    if (data.length == 0) return await Future.value("No Face saved");
     double minDist = 999;
     double currDist = 0.0;
     String predRes = "NOT RECOGNIZED";
 
-    _firestore
-        .collection('allfaces')
-        .doc(_auth.currentUser.uid)
-        .collection('faces')
-        .get()
-        .then((value) {
-      for (var doc in value.docs) {
-        currDist = 0.0;
-        for (int i = 0; i < currEmb.length; i++) {
-          currDist +=
-              (currEmb[i] - doc.data()['embedding'][i]).abs().toDouble();
-        }
-        if (currDist < minDist) {
-          minDist = currDist;
-          predRes = doc.data()['name'];
-        }
-      }
-      print(minDist.toString() + " " + predRes);
-      return predRes;
-    });
-    return predRes;
+    Future<String> facenamereturn() async => await _firestore
+            .collection('allfaces')
+            .doc(_auth.currentUser.uid)
+            .collection('faces')
+            .get()
+            .then((value) {
+          for (var doc in value.docs) {
+            currDist = 0.0;
+            for (int i = 0; i < currEmb.length; i++) {
+              currDist +=
+                  (currEmb[i] - doc.data()['embedding'][i]).abs().toDouble();
+            }
+            if (currDist < minDist) {
+              minDist = currDist;
+              predRes = doc.data()['name'];
+            }
+          }
+          print(minDist.toString() + " " + predRes);
+          return predRes;
+        });
+
+    return facenamereturn();
 
     // for (String label in data.keys) {
     // currDist = euclideanDistance(data[label], currEmb);
