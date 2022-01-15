@@ -82,6 +82,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           .doc(_auth.currentUser.uid)
                           .collection('settings')
                           .snapshots(),
+
+                          
                       builder: (context, snapshot) {
                         return Container(
                           padding: EdgeInsets.all(16.0),

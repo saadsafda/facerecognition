@@ -25,8 +25,6 @@ class _SignUpState extends State<SignUp> {
   bool _isLoading = false;
 
   Future<void> _submit() async {
-    // implement the signUp method in cloud firestore
-    // and then use the signUp method to create a new user
     if (_formKey.currentState.validate()) {
       setState(() {
         _isLoading = true;

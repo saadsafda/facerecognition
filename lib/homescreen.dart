@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   convertedImage, x.round(), y.round(), w.round(), h.round());
               croppedImage = imglib.copyResizeCropSquare(croppedImage, 112);
               // int startTime = new DateTime.now().millisecondsSinceEpoch;
-              res = _recog(croppedImage);
+              res = await _recog(croppedImage);
               // int endTime = new DateTime.now().millisecondsSinceEpoch;
               // print("Inference took ${endTime - startTime}ms");
               finalResult.add(res, _face);
@@ -205,7 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
           centerTitle: true,
           title: const Text('Face recognition'),
           leading: IconButton(
-              icon: Icon(Icons.add, color: Colors.blue), onPressed: () {}),
+              icon: Icon(Icons.add,
+               color: Colors.blue), onPressed: () {}),
           actions: <Widget>[
             PopupMenuButton<Choice>(
               onSelected: (Choice result) {
@@ -316,54 +317,40 @@ class _MyHomePageState extends State<MyHomePage> {
     return img1;
   }
 
-  String _recog(imglib.Image img) {
+  Future<String> _recog(imglib.Image img) async {
     List input = imageToByteListFloat32(img, 112, 128, 128);
     input = input.reshape([1, 112, 112, 3]);
     List output = List(1 * 192).reshape([1, 192]);
     interpreter.run(input, output);
     output = output.reshape([192]);
     e1 = List.from(output);
-    return compare(e1).toString();
+    String etc = await compare(e1);
+
+    return etc;
   }
 
   Future<String> compare(List currEmb) async {
-    if (data.length == 0) return await Future.value("No Face saved");
+    var firdoc = await _firestore
+        .collection('allfaces')
+        .doc(_auth.currentUser.uid)
+        .collection('faces')
+        .get();
     double minDist = 999;
     double currDist = 0.0;
     String predRes = "NOT RECOGNIZED";
-
-    Future<String> facenamereturn() async => await _firestore
-            .collection('allfaces')
-            .doc(_auth.currentUser.uid)
-            .collection('faces')
-            .get()
-            .then((value) {
-          for (var doc in value.docs) {
-            currDist = 0.0;
-            for (int i = 0; i < currEmb.length; i++) {
-              currDist +=
-                  (currEmb[i] - doc.data()['embedding'][i]).abs().toDouble();
-            }
-            if (currDist < minDist) {
-              minDist = currDist;
-              predRes = doc.data()['name'];
-            }
-          }
-          print(minDist.toString() + " " + predRes);
-          return predRes;
-        });
-
-    return facenamereturn();
-
-    // for (String label in data.keys) {
-    // currDist = euclideanDistance(data[label], currEmb);
-    // if (currDist <= threshold && currDist < minDist) {
-    // minDist = currDist;
-    // predRes = label;
-    //   }
-    // }
-    // print(minDist.toString() + " " + predRes);
-    // return predRes;
+    for (var doc in firdoc.docs) {
+      if (doc.data().length == 0) return await Future.value("No Face saved");
+      currDist = 0.0;
+      for (int i = 0; i < currEmb.length; i++) {
+        currDist += (currEmb[i] - doc.data()['embedding'][i]).abs().toDouble();
+      }
+      if (currDist < minDist) {
+        minDist = currDist;
+        predRes = doc.data()['name'];
+      }
+    }
+    print(minDist.toString() + " " + predRes);
+    return predRes;
   }
 
   void _resetFile() {

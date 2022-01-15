@@ -110,7 +110,7 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
                   convertedImage, x.round(), y.round(), w.round(), h.round());
               croppedImage = imglib.copyResizeCropSquare(croppedImage, 112);
               // int startTime = new DateTime.now().millisecondsSinceEpoch;
-              res = _recog(croppedImage);
+              res = await _recog(croppedImage);
               // int endTime = new DateTime.now().millisecondsSinceEpoch;
               // print("Inference took ${endTime - startTime}ms");
               finalResult.add(res, _face);
@@ -302,26 +302,35 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
     return img1;
   }
 
-  String _recog(imglib.Image img) {
+  Future<String> _recog(imglib.Image img) async {
     List input = imageToByteListFloat32(img, 112, 128, 128);
     input = input.reshape([1, 112, 112, 3]);
     List output = List(1 * 192).reshape([1, 192]);
     interpreter.run(input, output);
     output = output.reshape([192]);
     e1 = List.from(output);
-    return compare(e1).toUpperCase();
+    String _etc = await compare(e1);
+    return _etc;
   }
 
-  String compare(List currEmb) {
-    if (data.length == 0) return "No Face saved";
+  Future<String> compare(List currEmb) async {
+    var firdoc = await _firestore
+        .collection('allfaces')
+        .doc(_auth.currentUser.uid)
+        .collection('faces')
+        .get();
     double minDist = 999;
     double currDist = 0.0;
     String predRes = "NOT RECOGNIZED";
-    for (String label in data.keys) {
-      currDist = euclideanDistance(data[label], currEmb);
-      if (currDist <= threshold && currDist < minDist) {
+    for (var doc in firdoc.docs) {
+      if (doc.data().length == 0) return await Future.value("No Face saved");
+      currDist = 0.0;
+      for (int i = 0; i < currEmb.length; i++) {
+        currDist += (currEmb[i] - doc.data()['embedding'][i]).abs().toDouble();
+      }
+      if (currDist < minDist) {
         minDist = currDist;
-        predRes = label;
+        predRes = doc.data()['name'];
       }
     }
     print(minDist.toString() + " " + predRes);
@@ -392,6 +401,7 @@ class _MyAddFaceScreenState extends State<MyAddFaceScreen> {
             TextField(
               controller: TextEditingController()
                 ..text = Random().nextInt(1000).toString(),
+              keyboardType: TextInputType.number,
               decoration: new InputDecoration(
                 labelText: "Face Id",
               ),

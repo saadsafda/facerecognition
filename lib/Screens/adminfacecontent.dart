@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:Face_recognition/Screens/addfacescreen.dart';
+import 'package:Face_recognition/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -134,12 +135,17 @@ class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
                                                           ..text = snapshot
                                                               .data.docs[index]
                                                               .data()['id'],
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Edit Id',
+                                                    decoration:
+                                                        kTextFieldDecoration
+                                                            .copyWith(
+                                                      hintText: 'ID',
                                                     ),
                                                     onChanged: (value) {
                                                       _editid = value;
                                                     },
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
                                                   ),
                                                   TextField(
                                                     controller:
@@ -147,12 +153,17 @@ class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
                                                           ..text = snapshot
                                                               .data.docs[index]
                                                               .data()['name'],
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Edit Name',
+                                                    decoration:
+                                                        kTextFieldDecoration
+                                                            .copyWith(
+                                                      hintText: 'Edit Name',
                                                     ),
                                                     onChanged: (value) {
                                                       _editname = value;
                                                     },
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
                                                   ),
                                                   TextField(
                                                     controller:
@@ -161,9 +172,11 @@ class _MyAdminFaceContentState extends State<MyAdminFaceContent> {
                                                                   .docs[index]
                                                                   .data()[
                                                               'designation'],
-                                                    decoration: InputDecoration(
-                                                      labelText:
-                                                          'Edit designation',
+                                                    decoration:
+                                                        kTextFieldDecoration
+                                                            .copyWith(
+                                                      hintText:
+                                                          'Edit Designation',
                                                     ),
                                                     onChanged: (value) {
                                                       _editdesignation = value;
